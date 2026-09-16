@@ -1,0 +1,97 @@
+Project legal_consulting {
+  database_type: "PostgreSQL"
+  Note: "ERD local. Esquema legal_consulting YA EXISTE en CORE (vacío al momento de este pipeline). No ejecutar contra producción sin --permitir-prod."
+}
+
+Table legal_consulting.periodo_academico {
+  id smallserial [pk]
+  codigo varchar(10) [unique, not null, note: "anio + letra_origen, ej. 2026A"]
+  letra_origen varchar(5) [not null]
+  anio smallint [not null]
+}
+
+Table legal_consulting.area_derecho {
+  id smallserial [pk]
+  nombre varchar(60) [unique, not null, note: "PRIVADO, PUBLICO, LABORAL, CONCILIACION, PENAL..."]
+}
+
+Table legal_consulting.modalidad_atencion {
+  id smallserial [pk]
+  nombre varchar(40) [unique, not null, note: "PRESENCIAL, VIRTUAL"]
+}
+
+Table legal_consulting.estado_caso {
+  id smallserial [pk]
+  codigo varchar(20) [unique, not null]
+  nombre varchar(40) [not null]
+}
+
+Table legal_consulting.tipo_proceso {
+  id smallserial [pk]
+  nombre_normalizado varchar(120) [unique, not null, note: "typos de origen corregidos"]
+  nombre_origen varchar(120) [note: "primer valor crudo visto"]
+}
+
+Table legal_consulting.estudiante_consultorio {
+  id serial [pk]
+  nombre_origen varchar(200) [not null]
+  nombre_normalizado varchar(200) [unique, not null]
+  core_person_id integer [note: "lógico → core.person, sin FK. Sin documento en origen: match por nombre."]
+  match_status varchar(20) [default: 'pendiente']
+}
+
+Table legal_consulting.consulta {
+  id serial [pk]
+  ticket_externo varchar(20) [note: "sistema propio de Jurídico; NO cruza con tickets.ticket.id_externo (Zarigüeya)"]
+  fecha date [not null]
+  hora_texto varchar(20)
+  periodo_id smallint [not null, ref: > legal_consulting.periodo_academico.id]
+  area_derecho_id smallint [not null, ref: > legal_consulting.area_derecho.id]
+  estudiante_id integer [not null, ref: > legal_consulting.estudiante_consultorio.id]
+  modalidad_id smallint [not null, ref: > legal_consulting.modalidad_atencion.id]
+  estado_id smallint [not null, ref: > legal_consulting.estado_caso.id]
+  created_at timestamptz [default: `now()`]
+  updated_at timestamptz [default: `now()`, note: "se refresca en cada UPSERT, modo acumular (ago 2026)"]
+  Note: "UNIQUE (ticket_externo, fecha, hora_texto, area_derecho_id, estudiante_id, modalidad_id, estado_id) -- llave natural del modo acumular."
+}
+
+Table legal_consulting.proceso_judicial {
+  id serial [pk]
+  area_derecho_id smallint [not null, ref: > legal_consulting.area_derecho.id]
+  poder_sustitucion boolean
+  estudiante_id integer [not null, ref: > legal_consulting.estudiante_consultorio.id]
+  estado_id smallint [not null, ref: > legal_consulting.estado_caso.id]
+  estado_observacion varchar(200) [note: "separado de valores compuestos tipo 'ABIERTO/ RENUNCIA DE PODER'"]
+  tipo_proceso_id smallint [ref: > legal_consulting.tipo_proceso.id]
+  etapa_texto varchar(200)
+  etapa_fecha date [note: "NULL a propósito: no se infiere de texto libre sin año"]
+  created_at timestamptz [default: `now()`]
+  Note: "Carga MANUAL (03b_cargar_procesos_MANUAL.sql) -- el robot NUNCA la toca: el Excel de origen no trae número de expediente único, no hay llave natural para acumular sola."
+}
+
+Table legal_consulting.archivo_procesado {
+  id serial [pk]
+  drive_file_id varchar(100) [not null]
+  nombre_archivo varchar(300) [not null]
+  md5_checksum varchar(64)
+  procesado_en timestamptz [default: `now()`]
+  consultas_en_archivo integer
+  advertencias_totales integer
+  advertencias_criticas integer
+  estado varchar(20) [not null, note: "cargado | bloqueado_criticas | error"]
+  detalle text
+  Note: "UNIQUE (drive_file_id, md5_checksum). Control técnico del robot (Fase 2) -- solo de consulta, nunca de proceso_judicial. No es dato de negocio, no se conecta con ninguna otra tabla a propósito."
+}
+
+Table legal_consulting.referencia_cruce_con_core {
+  periodo_academico varchar [note: "NO cruza -- catálogo propio, sin equivalente en CORE"]
+  area_derecho varchar [note: "NO cruza -- catálogo propio, sin equivalente en CORE"]
+  modalidad_atencion varchar [note: "NO cruza -- catálogo propio, sin equivalente en CORE"]
+  estado_caso varchar [note: "NO cruza -- catálogo propio, sin equivalente en CORE"]
+  tipo_proceso varchar [note: "NO cruza -- catálogo propio, sin equivalente en CORE"]
+  consulta varchar [note: "NO cruza -- hecho propio, no existe en CORE"]
+  proceso_judicial varchar [note: "NO cruza -- hecho propio, no existe en CORE"]
+  archivo_procesado varchar [note: "NO cruza -- control técnico del robot, no es dato de negocio"]
+  estudiante_consultorio varchar [note: "SÍ cruza (pendiente) -- 0 de 48 estudiantes cruzados hasta el 7 sep 2026, match_status='pendiente' en el 100%. El Excel no trae documento, solo nombre; el cruce queda como paso manual"]
+  Note: "TABLA DE REFERENCIA -- no existe físicamente en la base de datos. Es solo para mostrar en el diagrama qué SÍ y qué NO se cruza con CORE. Cada columna es una de las 9 tablas reales de este esquema; el 'note' de cada columna explica su estado de cruce (pasa el mouse encima para verlo)."
+}

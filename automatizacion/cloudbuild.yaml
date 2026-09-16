@@ -1,0 +1,14 @@
+# Config de Cloud Build para automatizacion/Dockerfile. Se corre con el contexto en
+# pipeline_juridico/ (no en automatizacion/), porque el Dockerfile necesita copiar
+# normalizar_juridico.py y generar_sql_carga.py de la carpeta padre. Ver DESPLIEGUE.md.
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-f"
+      - "automatizacion/Dockerfile"
+      - "-t"
+      - "$_IMAGE"
+      - "."
+images:
+  - "$_IMAGE"

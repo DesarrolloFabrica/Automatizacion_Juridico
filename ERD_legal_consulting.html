@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ERD esquema legal_consulting — Consultorio Jurídico CUN</title>
+  <style>
+    :root { color-scheme: light; }
+    body { font-family: Segoe UI, system-ui, sans-serif; margin: 24px; color: #1a1a1a; background: #fff; }
+    h1 { font-size: 22px; margin: 0 0 8px; }
+    h2 { font-size: 16px; margin: 28px 0 10px; }
+    p, li { font-size: 14px; line-height: 1.45; }
+    .meta { color: #444; margin-bottom: 20px; }
+    .note { border: 1px solid #ccc; padding: 12px 14px; margin: 16px 0; background: #f7f7f7; }
+    svg { max-width: 100%; height: auto; border: 1px solid #ddd; }
+    table { border-collapse: collapse; width: 100%; font-size: 13px; }
+    th, td { border: 1px solid #ccc; padding: 6px 8px; text-align: left; vertical-align: top; }
+    th { background: #f0f0f0; }
+    .box { fill: #fff; stroke: #333; }
+    .box-fact { fill: #f3f3f3; stroke: #111; stroke-width: 1.6; }
+    .head { fill: #e8e8e8; stroke: #333; }
+    .pk { fill: #111; font-weight: 600; }
+    .fk { fill: #333; }
+    .col { fill: #333; }
+    @media print { .noprint { display: none; } body { margin: 12px; } }
+  </style>
+</head>
+<body>
+  <p class="noprint"><strong>Para pasar:</strong> Archivo → Imprimir → Guardar como PDF, o adjunta este HTML.</p>
+
+  <h1>ERD — esquema legal_consulting (Consultorio Jurídico)</h1>
+  <p class="meta">
+    CUN · Fuente Excel "CONTROL DE USUARIOS A-C.xlsx" (395 consultas + 10 procesos) ·
+    Esquema legal_consulting ya existía vacío en CORE; este pipeline solo agrega tablas dentro de él.<br />
+    Archivo: FLUJO/pipeline_juridico/01_legal_consulting_schema.sql · Fecha: 2 sep 2026
+  </p>
+
+  <div class="note">
+    <strong>Cómo se liga a CORE (solo lectura, sin FK físicas):</strong>
+    estudiante_consultorio → core.person (por nombre normalizado; el Excel no trae documento de estudiante) ·
+    En CORE no hay FK entre esquemas; el cruce es lógico, igual que en el esquema tickets.
+  </div>
+
+  <h2>Diagrama</h2>
+  <svg viewBox="0 0 992 900" xmlns="http://www.w3.org/2000/svg" aria-label="ERD legal_consulting">
+    <!-- catálogos -> estudiante_consultorio -->
+    <line x1="114" y1="160" x2="114" y2="200" stroke="#999" />
+    <line x1="309" y1="106" x2="309" y2="400" stroke="#999" />
+    <line x1="509" y1="106" x2="509" y2="400" stroke="#999" />
+    <line x1="709" y1="124" x2="709" y2="400" stroke="#999" />
+    <line x1="899" y1="124" x2="899" y2="400" stroke="#999" />
+    <!-- estudiante_consultorio -> hechos -->
+    <line x1="194" y1="354" x2="194" y2="400" stroke="#999" />
+    <line x1="194" y1="590" x2="194" y2="630" stroke="#999" />
+
+    <!-- periodo_academico -->
+    <rect class="box" x="24" y="24" width="180" height="136" rx="3" />
+    <rect class="head" x="24" y="24" width="180" height="26" rx="3" />
+    <text x="32" y="42" font-size="12" font-weight="700">periodo_academico</text>
+    <text class="pk" x="32" y="64" font-size="11">PK id  smallserial</text>
+    <text class="col" x="32" y="82" font-size="11">codigo  varchar UNIQUE</text>
+    <text class="col" x="32" y="100" font-size="11">letra_origen  varchar</text>
+    <text class="col" x="32" y="118" font-size="11">anio  smallint</text>
+
+    <!-- area_derecho -->
+    <rect class="box" x="224" y="24" width="170" height="82" rx="3" />
+    <rect class="head" x="224" y="24" width="170" height="26" rx="3" />
+    <text x="232" y="42" font-size="12" font-weight="700">area_derecho</text>
+    <text class="pk" x="232" y="64" font-size="11">PK id  smallserial</text>
+    <text class="col" x="232" y="82" font-size="11">nombre  varchar UNIQUE</text>
+
+    <!-- modalidad_atencion -->
+    <rect class="box" x="414" y="24" width="190" height="82" rx="3" />
+    <rect class="head" x="414" y="24" width="190" height="26" rx="3" />
+    <text x="422" y="42" font-size="12" font-weight="700">modalidad_atencion</text>
+    <text class="pk" x="422" y="64" font-size="11">PK id  smallserial</text>
+    <text class="col" x="422" y="82" font-size="11">nombre  varchar UNIQUE</text>
+
+    <!-- estado_caso -->
+    <rect class="box" x="624" y="24" width="170" height="100" rx="3" />
+    <rect class="head" x="624" y="24" width="170" height="26" rx="3" />
+    <text x="632" y="42" font-size="12" font-weight="700">estado_caso</text>
+    <text class="pk" x="632" y="64" font-size="11">PK id  smallserial</text>
+    <text class="col" x="632" y="82" font-size="11">codigo  varchar UNIQUE</text>
+    <text class="col" x="632" y="100" font-size="11">nombre  varchar</text>
+
+    <!-- tipo_proceso -->
+    <rect class="box" x="814" y="24" width="154" height="100" rx="3" />
+    <rect class="head" x="814" y="24" width="154" height="26" rx="3" />
+    <text x="822" y="42" font-size="12" font-weight="700">tipo_proceso</text>
+    <text class="pk" x="822" y="64" font-size="11">PK id  smallserial</text>
+    <text class="col" x="822" y="82" font-size="11">nombre_normalizado UNIQUE</text>
+    <text class="col" x="822" y="100" font-size="11">nombre_origen</text>
+
+    <!-- estudiante_consultorio -->
+    <rect class="box" x="24" y="200" width="340" height="154" rx="3" />
+    <rect class="head" x="24" y="200" width="340" height="26" rx="3" />
+    <text x="32" y="218" font-size="12" font-weight="700">estudiante_consultorio  (puente a CORE)</text>
+    <text class="pk" x="32" y="240" font-size="11">PK id  serial</text>
+    <text class="col" x="32" y="258" font-size="11">nombre_origen  varchar</text>
+    <text class="col" x="32" y="276" font-size="11">nombre_normalizado  varchar UNIQUE</text>
+    <text class="col" x="32" y="294" font-size="11">core_person_id  (CORE lógico, sin FK)</text>
+    <text class="col" x="32" y="312" font-size="11">match_status</text>
+
+    <!-- consulta (hecho) -->
+    <rect class="box-fact" x="24" y="400" width="944" height="190" rx="3" />
+    <rect class="head" x="24" y="400" width="944" height="26" rx="3" />
+    <text x="32" y="418" font-size="13" font-weight="700">consulta  (hecho: 1 fila = 1 atención, hoja "CONTROL DE USUARIOS")</text>
+    <text class="pk" x="32" y="444" font-size="11">PK id · ticket_externo (no único: multi-motivo por caso, "NO REGISTRA" → NULL)</text>
+    <text class="col" x="32" y="464" font-size="11">fecha, hora_texto</text>
+    <text class="fk" x="32" y="488" font-size="11">FK periodo_id, area_derecho_id, estudiante_id, modalidad_id, estado_id</text>
+    <text class="col" x="32" y="508" font-size="11">created_at</text>
+    <text x="32" y="532" font-size="11" fill="#666">395 filas cargadas del Excel origen</text>
+
+    <!-- proceso_judicial (hecho) -->
+    <rect class="box-fact" x="24" y="630" width="944" height="210" rx="3" />
+    <rect class="head" x="24" y="630" width="944" height="26" rx="3" />
+    <text x="32" y="648" font-size="13" font-weight="700">proceso_judicial  (hecho: 1 fila = 1 proceso judicial, hoja "PROCESOS 2025C")</text>
+    <text class="pk" x="32" y="674" font-size="11">PK id  serial</text>
+    <text class="col" x="32" y="694" font-size="11">poder_sustitucion, estado_observacion, etapa_texto, etapa_fecha (NULL a propósito)</text>
+    <text class="fk" x="32" y="714" font-size="11">FK area_derecho_id, estudiante_id, estado_id, tipo_proceso_id</text>
+    <text class="col" x="32" y="734" font-size="11">created_at</text>
+    <text x="32" y="758" font-size="11" fill="#666">10 filas cargadas del Excel origen (volumen bajo, catálogo de tipo/etapa aún corto)</text>
+  </svg>
+
+  <h2>Inventario (8 tablas)</h2>
+  <table>
+    <tr><th>Tabla</th><th>Rol</th><th>Sale del Excel</th></tr>
+    <tr><td>periodo_academico</td><td>Catálogo</td><td># SEMESTRE + año de FECHA</td></tr>
+    <tr><td>area_derecho</td><td>Catálogo</td><td>MOTIVO DE CONSULTA + LINEA</td></tr>
+    <tr><td>modalidad_atencion</td><td>Catálogo</td><td>MODALIDAD</td></tr>
+    <tr><td>estado_caso</td><td>Catálogo</td><td>ESTADO (ambas hojas, valor compuesto separado)</td></tr>
+    <tr><td>tipo_proceso</td><td>Catálogo</td><td>TIPO (typos de origen corregidos)</td></tr>
+    <tr><td>estudiante_consultorio</td><td>Puente a CORE</td><td>ESTUDIANTE ASIGNADO (ambas hojas, nombre completo/corto)</td></tr>
+    <tr><td>consulta</td><td>Hecho</td><td>395 filas, hoja CONTROL DE USUARIOS</td></tr>
+    <tr><td>proceso_judicial</td><td>Hecho</td><td>10 filas, hoja PROCESOS 2025C</td></tr>
+  </table>
+
+  <p class="meta">
+    Pendiente de negocio: match_status de estudiante_consultorio contra CORE vivo (solo SELECT, por nombre —
+    el Excel no trae documento de estudiante). Revisar advertencias_calidad.csv antes de cargar: incluye al
+    menos 2 posibles duplicados de nombre que el matcher automático no fusionó (ver LEEME.txt).
+    Carga a GCP no autorizada en este entregable.
+  </p>
+</body>
+</html>

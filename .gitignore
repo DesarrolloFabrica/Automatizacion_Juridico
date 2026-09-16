@@ -1,0 +1,25 @@
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+.venv/
+venv/
+datos_fuente/
+*.xlsx
+advertencias_calidad.csv
+juridico_normalizado.xlsx
+*.csv
+!requirements.txt
+.DS_Store
+Thumbs.db
+
+# SQL generados con datos de corridas (contienen PII) — se regeneran con pipeline.py
+02_cargar_catalogos.sql
+03_cargar_juridico.sql
+03b_cargar_procesos_MANUAL.sql
+
+# SQL generados con datos de corridas (PII) — se regeneran con pipeline.py
+02_cargar_catalogos.sql
+03_cargar_juridico.sql
+03b_cargar_procesos_MANUAL.sql
