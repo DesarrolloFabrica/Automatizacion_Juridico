@@ -1,4 +1,4 @@
-# Documentación del proceso — Consultorio Jurídico
+﻿# Documentación del proceso — Consultorio Jurídico
 
 CUN · Fábrica de contenidos · sep 2026
 
@@ -6,7 +6,6 @@ Workflow completo: Excel de control de usuarios / procesos → Postgres (`esquem
 
 Relacionado:
 
-- `LEEME.txt` — piloto local (Fase 1)
 - `automatizacion/DESPLIEGUE.md` — GCP (Fase 2)
 - `CHECKLIST_ENTREGA.md`
 - `DICCIONARIO_DATOS_EXCEL.md`

@@ -1,22 +1,64 @@
+<div align="center">
+
 # Automatización Consultorio Jurídico
 
-Pipeline CUN · Fábrica de contenidos: Excel de control de usuarios / procesos → Postgres (`esquema legal_consulting`), con robot semanal en GCP.
+**CUN · Fábrica de contenidos** — Excel de consultas/procesos → Postgres (`legal_consulting`) + robot semanal en GCP
+
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-legal__consulting-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Google Cloud](https://img.shields.io/badge/Google%20Cloud-Run%20%2B%20Scheduler-4285F4?logo=googlecloud&logoColor=white)](https://cloud.google.com/)
+[![Drive](https://img.shields.io/badge/Google%20Drive-fuente%20Excel-0F9D58?logo=googledrive&logoColor=white)](https://drive.google.com/)
+[![Licencia](https://img.shields.io/badge/Uso-interno%20CUN-orange)](#)
+
+</div>
+
+---
+
+## Tabla de contenido
+
+- [Visión general](#-visión-general)
+- [Qué es (y qué no es)](#-qué-es-y-qué-no-es)
+- [Documentación](#-documentación)
+- [Uso rápido (local)](#-uso-rápido-local)
+- [Flujo continuo](#-flujo-continuo)
+- [Estructura del proyecto](#-estructura-del-proyecto)
+- [Requisitos](#-requisitos)
+
+---
+
+## Visión general
+
+Pipeline del **Consultorio Jurídico**: lee el Excel de control de usuarios (consultas) y procesos judiciales, normaliza catálogos + hechos y carga en modo **acumular** (UPSERT).
+
+| Fase | Dónde | Qué hace |
+|------|--------|----------|
+| **Fase 1** | PC | Piloto / prueba con `pipeline.py` |
+| **Fase 2** | GCP | Robot cada lunes ~9am (`sync_juridico.py`) |
+
+Hojas obligatorias: **`CONTROL DE USUARIOS`** y **`PROCESOS 2025C`** (o periodo equivalente).
+
+---
 
 ## Qué es (y qué no es)
 
 | Esto sí | Esto no |
 |---------|---------|
-| Consultas y procesos del consultorio | Diplomados (repo aparte) |
+| Consultas y procesos del consultorio | Diplomados ([repo aparte](https://github.com/DesarrolloFabrica/Automatizacion_Diplomados)) |
 | Robot lunes Drive → BD | Flujo LMS / Inventario |
-| Esquema `legal_consulting` | Pendientes Cruce CORE |
+| Esquema `legal_consulting` | Informe `Pendientes_Cruce_CORE` |
 
-## Docs (empieza aquí)
+---
 
-1. [DOCUMENTACION_PROCESO.md](DOCUMENTACION_PROCESO.md)  
-2. [DICCIONARIO_DATOS_EXCEL.md](DICCIONARIO_DATOS_EXCEL.md)  
-3. [CHECKLIST_ENTREGA.md](CHECKLIST_ENTREGA.md)  
-4. [LEEME.txt](LEEME.txt)  
-5. [automatizacion/DESPLIEGUE.md](automatizacion/DESPLIEGUE.md)  
+## Documentación
+
+| Doc | Para qué |
+|-----|----------|
+| [DOCUMENTACION_PROCESO.md](DOCUMENTACION_PROCESO.md) | Workflow paso a paso |
+| [DICCIONARIO_DATOS_EXCEL.md](DICCIONARIO_DATOS_EXCEL.md) | Hojas y columnas |
+| [CHECKLIST_ENTREGA.md](CHECKLIST_ENTREGA.md) | Validar entrega |
+| [automatizacion/DESPLIEGUE.md](automatizacion/DESPLIEGUE.md) | Comandos GCP (Fase 2) |
+
+---
 
 ## Uso rápido (local)
 
@@ -28,27 +70,49 @@ python pipeline.py "RUTA\CONTROL DE USUARIOS A-C.xlsx"
 python pipeline.py "RUTA\CONTROL DE USUARIOS A-C.xlsx" --cargar
 ```
 
-Hojas obligatorias: `CONTROL DE USUARIOS` y `PROCESOS 2025C` (o periodo equivalente).
+Producción solo autorizada. El `01_legal_consulting_schema.sql` **no** va en el flujo diario.
 
-## Estructura
+---
+
+## Flujo continuo
 
 ```
-pipeline_juridico/
-  normalizar_juridico.py
-  generar_sql_carga.py
-  pipeline.py
-  01_legal_consulting_schema.sql
-  automatizacion/
-    sync_juridico.py
-    DESPLIEGUE.md
-    Dockerfile
-  DOCUMENTACION_PROCESO.md
-  DICCIONARIO_DATOS_EXCEL.md
-  CHECKLIST_ENTREGA.md
+Excel → normalizar (2 hojas) → generar SQL → (cargar) → registrar / correo
 ```
+
+- Local: `pipeline.py`
+- Nube: `automatizacion/sync_juridico.py`
+
+Comparte red GCP con Diplomados; **secretos y cuenta de servicio propios**.
+
+---
+
+## Estructura del proyecto
+
+```
+Automatizacion_Juridico/
+├── README.md
+├── DOCUMENTACION_PROCESO.md
+├── DICCIONARIO_DATOS_EXCEL.md
+├── CHECKLIST_ENTREGA.md
+├── normalizar_juridico.py
+├── generar_sql_carga.py
+├── pipeline.py
+├── 01_legal_consulting_schema.sql
+├── 04a_verificar_match_core_person.sql
+├── requirements.txt
+├── .env.example
+└── automatizacion/
+    ├── sync_juridico.py
+    ├── DESPLIEGUE.md
+    ├── Dockerfile
+    └── cloudbuild.yaml
+```
+
+---
 
 ## Requisitos
 
 - Python 3.10+
-- Postgres local para pruebas
-- GCP para Fase 2 (comparte red con Diplomados; secretos separados)
+- PostgreSQL local para pruebas
+- Fase 2: GCP (Run + Scheduler + Drive + Secret Manager)

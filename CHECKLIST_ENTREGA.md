@@ -1,11 +1,10 @@
-# Checklist de entrega — Consultorio Jurídico
+﻿# Checklist de entrega — Consultorio Jurídico
 
 ## A. Documentación
 
 - [ ] `DOCUMENTACION_PROCESO.md`
 - [ ] `DICCIONARIO_DATOS_EXCEL.md`
-- [ ] `LEEME.txt`
-- [ ] `automatizacion/DESPLIEGUE.md`
+- [ ] - [ ] `automatizacion/DESPLIEGUE.md`
 - [ ] README del repo enlaza los docs
 
 ## B. Piloto local (Fase 1)
