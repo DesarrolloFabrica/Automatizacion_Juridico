@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 # Automatización Consultorio Jurídico
 
@@ -17,7 +17,6 @@
 ## Tabla de contenido
 
 - [Visión general](#-visión-general)
-- [Qué es (y qué no es)](#-qué-es-y-qué-no-es)
 - [Documentación](#-documentación)
 - [Uso rápido (local)](#-uso-rápido-local)
 - [Flujo continuo](#-flujo-continuo)
@@ -36,16 +35,6 @@ Pipeline del **Consultorio Jurídico**: lee el Excel de control de usuarios (con
 | **Fase 2** | GCP | Robot cada lunes ~9am (`sync_juridico.py`) |
 
 Hojas obligatorias: **`CONTROL DE USUARIOS`** y **`PROCESOS 2025C`** (o periodo equivalente).
-
----
-
-## Qué es (y qué no es)
-
-| Esto sí | Esto no |
-|---------|---------|
-| Consultas y procesos del consultorio | Diplomados ([repo aparte](https://github.com/DesarrolloFabrica/Automatizacion_Diplomados)) |
-| Robot lunes Drive → BD | Flujo LMS / Inventario |
-| Esquema `legal_consulting` | Informe `Pendientes_Cruce_CORE` |
 
 ---
 
